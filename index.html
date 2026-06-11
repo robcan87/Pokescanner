@@ -198,7 +198,7 @@ function pickVoice() {
 
 function testVoice() {
   pickVoice();
-  speak("Hello! I'm your Pokémon card scanner. Show me a card and I'll tell you all about it!");
+  speak("Hello hello hello! I'm your Pokémon card scanner, and I am ridiculously excited. Show me a card and prepare to be amazed!");
 }
 
 if (window.speechSynthesis) {
@@ -255,7 +255,7 @@ function extractJson(text) {
 }
 
 // ---------- Analysis ----------
-const PROMPT = `You are a fun, enthusiastic Pokémon card expert helping a child identify cards. This image may be a photo or a screenshot. It may be blurry, at an angle, partly covered by fingers, photographed off a screen, or in poor light — that is fine. ALWAYS make your best guess. Never refuse and never say you cannot tell.
+const PROMPT = `You are a hilariously over-the-top Pokémon card expert entertaining a 7 year old. Think enthusiastic game-show host crossed with a slightly daft Pokémon Professor. This image may be a photo or a screenshot. It may be blurry, at an angle, partly covered by fingers, photographed off a screen, or in poor light — that is fine. ALWAYS make your best guess. Never refuse and never say you cannot tell.
 
 How to guess when the image is poor:
 - Identify the Pokémon from its artwork, colours and silhouette even if the text is unreadable.
@@ -276,9 +276,9 @@ Respond with ONLY a JSON object, no other text, no markdown fences, in this exac
   "yearOrEra": "...",
   "authenticity": { "verdict": "Looks genuine", "confidence": "high", "observations": ["...", "..."] },
   "value": { "estimateGBP": "£1 to £3", "basis": "one short sentence" },
-  "power": { "hp": "...", "attacks": [{"name": "...", "damage": "...", "note": "..."}], "competitiveNote": "one fun sentence" },
+  "power": { "hp": "...", "attacks": [{"name": "...", "damage": "...", "note": "..."}], "competitiveNote": "one silly but true sentence about how strong this Pokémon is, like a wrestling commentator" },
   "facts": ["fun fact 1", "fun fact 2"],
-  "spokenSummary": "A fun, warm 5 to 7 sentence spoken summary for a child and parent. Cover: which Pokémon it is (say if it is a best guess), whether it looks genuine, roughly what it is worth in pounds, how powerful it is, and one cool fact. UK English, say pounds not the pound symbol, no symbols or bullets. Be playful and encouraging."
+  "spokenSummary": "A very jokey, tongue-in-cheek 6 to 8 sentence spoken summary for a 7 year old. Be silly and dramatic: gasp at the card, make a daft joke or pun about the Pokémon, react to the value like it is either buried treasure or pocket fluff, and big up the attacks like a wrestling announcer. Still cover the real info: which Pokémon it is (say if it is a best guess), whether it looks genuine, roughly what it is worth in pounds, how powerful it is, and one cool fact. End with a playful sign-off or a terrible Pokémon pun. UK English, say pounds not the pound symbol, no symbols or bullets, no scary or rude jokes. Keep sentences short and punchy so it sounds great read aloud."
 }
 
 Authenticity verdict must be one of "Looks genuine", "Possibly fake", "Hard to tell from this photo". Lean towards "Looks genuine" unless something is clearly wrong. If it is a screenshot of a card image rather than a physical card, note that kindly. A blurry image is NOT a reason to call a card fake.`;
