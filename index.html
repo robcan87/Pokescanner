@@ -94,6 +94,9 @@ body {
     <div class="eyebrow">One-time setup</div>
     <div class="row14">Paste your Anthropic API key. It is saved only on this device.</div>
     <input class="key-input" type="password" id="apiKeyInput" placeholder="sk-ant-...">
+    <div class="row14" style="margin-top:8px">Voice</div>
+    <select class="key-input" id="voiceSelect"></select>
+    <button class="btn" style="width:100%;margin-bottom:8px" onclick="testVoice()">🔊 Test this voice</button>
     <button class="btn primary" style="width:100%" onclick="saveKey()">Save and start scanning</button>
     <div class="note">Get a key at console.anthropic.com → API Keys. Each scan costs well under a penny.</div>
   </div>
@@ -157,13 +160,47 @@ function initView() {
 // ---------- Voice ----------
 let speaking = false, lastSummary = "";
 let chosenVoice = null;
+
+// Rank voices by quality: enhanced/premium first, then good UK names, then any UK, then any English
+function voiceScore(v) {
+  let s = 0;
+  if (/enhanced|premium|natural|neural|siri/i.test(v.name)) s += 100;
+  if (v.lang === "en-GB") s += 50;
+  else if (v.lang && v.lang.indexOf("en") === 0) s += 20;
+  if (/serena|kate|sonia|libby|stephanie|martha/i.test(v.name)) s += 10;
+  if (/compact/i.test(v.name)) s -= 30; // low-quality compact voices
+  return s;
+}
+
 function pickVoice() {
   const vs = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-  chosenVoice =
-    vs.find(v => v.lang === "en-GB" && /female|serena|kate|sonia|libby/i.test(v.name)) ||
-    vs.find(v => v.lang === "en-GB") ||
-    vs.find(v => v.lang && v.lang.indexOf("en") === 0) || null;
+  const english = vs.filter(function(v){ return v.lang && v.lang.indexOf("en") === 0; });
+  english.sort(function(a, b){ return voiceScore(b) - voiceScore(a); });
+
+  // Honour a saved choice if it still exists on this device
+  const savedName = localStorage.getItem("pokescanner_voice") || "";
+  chosenVoice = english.find(function(v){ return v.name === savedName; }) || english[0] || null;
+
+  // Populate the picker
+  const sel = document.getElementById("voiceSelect");
+  if (sel) {
+    sel.innerHTML = english.map(function(v){
+      const label = v.name + " (" + v.lang + ")" + (/enhanced|premium|natural|neural/i.test(v.name) ? " ⭐" : "");
+      return '<option value="' + v.name.replace(/"/g, "&quot;") + '"' +
+        (chosenVoice && v.name === chosenVoice.name ? " selected" : "") + '>' + label + '</option>';
+    }).join("");
+    sel.onchange = function() {
+      localStorage.setItem("pokescanner_voice", sel.value);
+      pickVoice();
+    };
+  }
 }
+
+function testVoice() {
+  pickVoice();
+  speak("Hello! I'm your Pokémon card scanner. Show me a card and I'll tell you all about it!");
+}
+
 if (window.speechSynthesis) {
   pickVoice();
   window.speechSynthesis.addEventListener("voiceschanged", pickVoice);
@@ -173,7 +210,7 @@ function speak(text) {
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   if (chosenVoice) u.voice = chosenVoice;
-  u.rate = 1.0; u.pitch = 1.05;
+  u.rate = 0.97; u.pitch = 1.0;
   u.onstart = () => setSpeaking(true);
   u.onend = () => setSpeaking(false);
   u.onerror = () => setSpeaking(false);
